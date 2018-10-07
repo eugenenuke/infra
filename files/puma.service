@@ -1,0 +1,12 @@
+[Unit]
+Description=Puma service
+After=network.target
+
+[Service]
+User=appuser
+Group=appuser
+Type=simple
+ExecStart=/usr/local/bin/puma
+
+[Install]
+WantedBy=multi-user.target

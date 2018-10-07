@@ -1,16 +1,33 @@
 {
+	"variables": {
+		"proj_id": "test-01-218619",
+		"machine_type": null
+	},
 	"builders": [
 		{
 			"type": "googlecompute",
-			"project_id": "test-01-218619",
+			"project_id": "{{user `proj_id`}}",
 			"image_name": "reddit-base-{{timestamp}}",
 			"source_image": "ubuntu-1604-xenial-v20181004",
 			"zone": "europe-west1-b",
 			"ssh_username": "appuser",
-			"machine_type": "f1-micro"
+			"machine_type": "{{user `machine_type`}}",
+			"tags": [
+				"puma-server"
+			]
 		}
 	],
 	"provisioners": [
+		{
+ 			"type": "file",
+			"source": "files/puma.service",
+			"destination": "/home/appuser/puma.service"
+		},
+		{
+ 			"type": "file",
+			"source": "files/puma",
+			"destination": "/home/appuser/puma"
+		},
 		{
 			"type": "shell",
 			"script": "scripts/install_ruby.sh"
@@ -18,6 +35,15 @@
 		{
 			"type": "shell",
 			"script": "scripts/install_mongodb.sh",
+			"execute_command": "sudo {{.Path}}"
+		},
+		{
+			"type": "shell",
+			"script": "scripts/deploy.sh"
+		},
+		{
+			"type": "shell",
+			"script": "scripts/deploy_service.sh",
 			"execute_command": "sudo {{.Path}}"
 		}
 	]
