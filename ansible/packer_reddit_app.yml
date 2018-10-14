@@ -1,0 +1,63 @@
+---
+- name: Install Ruby
+  hosts: all
+  become: yes
+  vars:
+    app_path: "~/reddit"
+
+  tasks:
+  - name: Install Ruby
+    apt:
+      name: "{{ packages }}"
+      update_cache: yes
+    vars:
+      packages:
+      - ruby
+      - ruby-dev
+      - gcc
+      - make
+
+  - name: Install Ruby bundler
+    become: no
+    gem:
+      name: bundler
+
+  - name: Fetch the application
+    become: no
+    git:
+      repo: https://github.com/Artemmkin/reddit.git
+      dest: "{{ app_path }}"
+    notify: "restart puma"
+
+  - name: Get dependencies
+    become: no
+    bundler:
+      chdir: "{{ app_path }}"
+      executable: "~/.gem/ruby/2.3.0/bin/bundler"
+
+  - name: Touch db_config file
+    become: no
+    file:
+      path: "~/db_config"
+      state: touch
+    notify: "restart puma"
+
+  - name: Create a service file for puma
+    template:
+      src: "templates/puma.service"
+      dest: "/etc/systemd/system/"
+    notify: "restart puma"
+
+  - name: Enable service
+    service:
+      name: puma
+      enabled: yes
+      state: started
+
+  handlers:
+  - name: restart puma
+    service:
+      name: puma
+      state: restarted
+
+...
