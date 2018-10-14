@@ -1,0 +1,13 @@
+Run these commands to prepare your environment:
+
+$ virtualenv2 <venv_dir>
+$ source <venv_dir>/bin/activate
+$ pip install -r requirements.txt
+
+
+Run your instance with ubuntu16.04
+
+
+Run the playbook
+
+$ ansible-playbook -i <instance_ip>, -u appuser reddit_app.yml -v
