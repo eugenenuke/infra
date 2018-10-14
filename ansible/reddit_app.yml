@@ -1,63 +1,70 @@
 ---
-- name: Install Ruby
+- name: Configure hosts & deploy application
   hosts: all
-  become: yes
   vars:
-    app_path: "~/reddit"
-
+    mongo_bind_ip: 0.0.0.0
+    db_host: 10.132.0.2
   tasks:
-  - name: Install Ruby
-    apt:
-      name: "{{ packages }}"
-      update_cache: yes
-    vars:
-      packages:
-      - ruby
-      - ruby-dev
-      - gcc
-      - make
-
-  - name: Install Ruby bundler
-    become: no
-    gem:
-      name: bundler
-
-  - name: Fetch the application
-    become: no
-    git:
-      repo: https://github.com/Artemmkin/reddit.git
-      dest: "{{ app_path }}"
-    notify: "restart puma"
-
-  - name: Get dependencies
-    become: no
-    bundler:
-      chdir: "{{ app_path }}"
-      executable: "~/.gem/ruby/2.3.0/bin/bundler"
-
-  - name: Touch db_config file
-    become: no
-    file:
-      path: "~/db_config"
-      state: touch
-    notify: "restart puma"
-
-  - name: Create a service file for puma
+  - name: Change mongo config file
+    become: yes
     template:
-      src: "templates/puma.service"
-      dest: "/etc/systemd/system/"
-    notify: "restart puma"
+      src: templates/mongod.conf.j2
+      dest: /etc/mongod.conf
+      mode: 0644
+    notify: restart mongo
+    tags: db-tag
 
-  - name: Enable service
+  - name: Fetch the latest version of application code
+    git:
+      repo: 'https://github.com/Artemmkin/reddit.git'
+      dest: /home/appuser/reddit
+      version: monolith
+    tags: deploy-tag
+    notify: restart puma
+
+  - name: Bundle install
+    bundler:
+      state: present
+      chdir: /home/appuser/reddit
+      executable: ~/.rvm/gems/ruby-2.4.1/wrappers/bundler
+    tags: deploy-tag
+
+  - name: Add unit file for Puma
+    become: yes
+    copy:
+      src: files/puma.service
+      dest: /etc/systemd/system/puma.service
+    notify: reload puma
+    tags: app-tag
+
+  - name: Add config for DB connection
+    template:
+      src: templates/db_config.j2
+      dest: /home/appuser/db_config
+    tags: app-tag
+
+  - name: enable puma
+    become: yes
     service:
       name: puma
       enabled: yes
-      state: started
+    tags: app-tag
 
   handlers:
+  - name: restart mongo
+    become: yes
+    service:
+      name: mongod
+      state: restarted
+
+  - name: reload puma
+    become: yes
+    service:
+      name: puma
+      state: reloaded
+
   - name: restart puma
+    become: yes
     service:
       name: puma
       state: restarted
-
-...
