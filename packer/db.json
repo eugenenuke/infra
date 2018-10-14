@@ -1,0 +1,25 @@
+{
+	"variables": {
+		"proj_id": "infra-218807",
+		"machine_type": null
+	},
+	"builders": [
+		{
+			"type": "googlecompute",
+			"project_id": "{{user `proj_id`}}",
+			"image_name": "reddit-base-{{timestamp}}",
+			"source_image_family": "ubuntu-1604-lts",
+			"zone": "europe-west1-b",
+			"ssh_username": "appuser",
+			"machine_type": "{{user `machine_type`}}",
+			"tags": [ ]
+		}
+	],
+	"provisioners": [
+		{
+			"type": "shell",
+			"script": "scripts/install_mongodb.sh",
+			"execute_command": "sudo {{.Path}}"
+		}
+	]
+}
