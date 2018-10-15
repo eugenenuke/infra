@@ -1,0 +1,20 @@
+---
+- name: Deploy DB
+  hosts: db
+  vars:
+    mongo_bind_ip: 0.0.0.0
+  become: yes
+  tasks:
+  - name: Change mongo config file
+    template:
+      src: templates/mongod.conf.j2
+      dest: /etc/mongod.conf
+      mode: 0644
+    notify: restart mongo
+
+  handlers:
+  - name: restart mongo
+    service:
+      name: mongod
+      state: restarted
+...
