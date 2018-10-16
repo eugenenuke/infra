@@ -1,0 +1,9 @@
+---
+- name: Configure application
+  hosts: app
+  become: yes
+
+  roles:
+  - app
+
+...
