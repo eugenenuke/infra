@@ -15,12 +15,11 @@
 - name: Install mongodb
   apt:
     name: mongodb
-    update_cache: yes
+    update_cache: true
 
 - name: Start and enable mongod service
   service:
     name: mongodb
     state: started
-    enabled: yes
+    enabled: true
 ...
-

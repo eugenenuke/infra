@@ -4,4 +4,3 @@
   service:
     name: mongodb
     state: restarted
-
