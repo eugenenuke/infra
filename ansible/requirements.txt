@@ -17,3 +17,6 @@ six
 pyasn1
 requests
 google-auth
+molecule
+testinfra
+python-vagrant

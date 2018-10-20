@@ -1,0 +1,13 @@
+---
+- name: Install Ruby
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - ruby
+    - ruby-dev
+    - gcc
+    - make
+    - bundler
+...

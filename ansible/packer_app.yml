@@ -1,0 +1,13 @@
+---
+- name: Install Ruby
+  hosts: all
+  become: yes
+  vars:
+    app_path: "~/reddit"
+
+  roles:
+    - app
+
+- import_playbook: deploy.yml
+
+...

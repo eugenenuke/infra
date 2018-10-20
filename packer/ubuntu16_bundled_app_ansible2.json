@@ -1,0 +1,33 @@
+{
+	"variables": {
+		"proj_id": "test-01-218619",
+		"machine_type": null
+	},
+	"builders": [
+		{
+			"type": "googlecompute",
+			"project_id": "{{user `proj_id`}}",
+			"image_name": "reddit-base-{{timestamp}}",
+			"source_image": "ubuntu-1604-xenial-v20181004",
+			"zone": "europe-west1-b",
+			"ssh_username": "appuser",
+			"machine_type": "{{user `machine_type`}}",
+			"tags": [
+				"puma-server",
+				"ssh"
+			]
+		}
+	],
+	"provisioners": [
+		{
+ 			"type": "ansible",
+ 			"user": "appuser",
+			"playbook_file": "ansible/packer_db.yml"
+		},
+		{
+ 			"type": "ansible",
+ 			"user": "appuser",
+			"playbook_file": "ansible/packer_app.yml"
+		}
+	]
+}
