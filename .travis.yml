@@ -2,7 +2,7 @@ language: python
 python:
 - '3.6'
 install:
-- pip install ansible==2.6.0 molecule apache-libcloud
+- pip install ansible==2.6.0 molecule apache-libcloud python-vagrant
 script:
 - cd $TRAVIS_BUILD_DIR/ansible/roles/db && molecule --debug test
 after_script:
