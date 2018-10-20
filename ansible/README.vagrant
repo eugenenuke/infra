@@ -1,0 +1,11 @@
+# You need libvirtd plugin
+$ vagrant plugin install vagrant-libvirt
+
+# And a firewall
+pacman -S ebtables firewalld
+systemctl enable ebtables
+systemctl start ebtables
+systemctl restart libvirtd
+
+# start
+vagrant up

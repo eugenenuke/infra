@@ -1,1 +1,7 @@
 *.retry
+# Vagrant
+.vagrant/
+*.logs
+
+*.pyc
+__pycache__
